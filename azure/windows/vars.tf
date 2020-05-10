@@ -24,8 +24,8 @@ variable "subnet_name" {
 
 variable "vm_name" {
   type = "string"
-  description = "Name of the terraria server"
-  default = "terraria-WINDOWS"
+  description = "Name of the terraria server (maximum 15 characters)"
+  default = "terraria-VM"
 }
 
 variable "vm_size" {
@@ -52,11 +52,19 @@ variable "nic_name" {
   default = "terraria-NIC"
 }
 
+variable "nsg_name" {
+  type = "string"
+  description = "Name of the network security group"
+  default = "terraria-NSG"
+}
+
+
 variable "public_ip_name" {
   type = "string"
   description = "Name of the public ip address"
   default = "terraria-public-IP"
 }
+
 
 
 
