@@ -13,11 +13,15 @@ resource "azurerm_virtual_network" "windows" {
   resource_group_name = var.resource_group_name
   address_space       = ["10.0.0.0/16"]
   dns_servers         = ["168.63.129.16", "10.0.1.4"]
+  depends_on          = ["azurerm_resource_group.windows"]
+}
 
-  subnet {
-    name           = var.subnet_name
-    address_prefix = "10.0.1.0/24"
-  }
+resource "azurerm_subnet" "windows" {
+  name                 = var.subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = var.vnet_name
+  address_prefix       = "10.0.1.0/24"
+  depends_on           = ["azurerm_resource_group.windows", "azurerm_virtual_network.windows"]
 }
 
 resource "azurerm_public_ip" "windows" {
@@ -25,6 +29,7 @@ resource "azurerm_public_ip" "windows" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
+  depends_on          = ["azurerm_resource_group.windows"]
 }
 
 resource "azurerm_network_interface" "windows" {
@@ -39,6 +44,7 @@ resource "azurerm_network_interface" "windows" {
     private_ip_address            = "10.0.1.4"
     public_ip_address_id          = azurerm_public_ip.windows.id
   }
+  depends_on = ["azurerm_public_ip.windows"]
 }
 
 resource "azurerm_network_security_group" "windows" {
@@ -69,6 +75,7 @@ resource "azurerm_network_security_group" "windows" {
     source_address_prefix      = chomp(data.http.myip.body)
     destination_address_prefix = "*"
   }
+  depends_on = ["azurerm_resource_group.windows"]
 }
 
 resource "azurerm_subnet_network_security_group_association" "windows" {
